@@ -1,0 +1,43 @@
+# AuthReloaded Configuration File
+
+# Database configuration
+# type: 'sqlite', 'mysql', or 'h2'
+database:
+  type: 'sqlite'
+
+  sqlite:
+    # Use {pluginDir} as a placeholder for the plugin's data folder.
+    file: '{pluginDir}/database.db'
+
+  mysql:
+    host: 'localhost'
+    port: 3306
+    database: 'authreloaded'
+    username: 'user'
+    password: 'password'
+
+  h2:
+    # Use {pluginDir} as a placeholder for the plugin's data folder.
+    file: '{pluginDir}/database' # Creates database.mv.db
+    username: 'sa'
+    password: ''
+
+  # HikariCP connection pool settings
+  pool-settings:
+    maximum-pool-size: 10
+    connection-timeout: 30000
+    idle-timeout: 600000
+    max-lifetime: 1800000
+
+# Messages configuration
+messages:
+  # Available languages: 'en-US', 'es-CL'
+  # You can create your own language files in the 'lang' folder.
+  language: 'en-US'
+
+# Security settings
+security:
+  # Maximum number of login attempts before kicking the player. (Not implemented yet)
+  max-login-attempts: 5
+  # Time in seconds a player can be unauthenticated before being kicked. (Not implemented yet)
+  auth-timeout: 60

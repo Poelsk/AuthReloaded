@@ -1,0 +1,26 @@
+name: AuthReloaded
+version: '1.0.0'
+main: io.github.poelsk.authreloaded.AuthReloaded
+api-version: '1.16'
+author: Poelsk
+description: A hybrid authentication plugin for premium and non-premium players. (experimental version, no for public use.)
+commands:
+  login:
+    description: Log in to the server.
+    usage: /<command> <password>
+    permission: authreloaded.use
+  register:
+    description: Register an account on the server.
+    usage: /<command> <password> <confirmPassword>
+    permission: authreloaded.use
+  authreload:
+    description: Admin commands for AuthReloaded.
+    usage: /<command> reload
+    permission: authreloaded.admin
+permissions:
+  authreloaded.use:
+    description: Allows players to use the /login and /register commands.
+    default: true
+  authreloaded.admin:
+    description: Allows access to administrative commands for AuthReloaded.
+    default: op

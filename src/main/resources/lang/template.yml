@@ -1,0 +1,48 @@
+# AuthReloaded Language File Template
+# This file explains what each message key is for.
+# Colors can be used with '&' followed by a hex code (0-9, a-f).
+
+# The prefix that appears before every plugin message.
+prefix: '&8 &r'
+
+# --- Player Messages ---
+# Message sent to an unregistered player on join.
+login_prompt: '&ePlease log in with /login <password>'
+# Message sent to a registered player on join.
+register_prompt: '&ePlease register with /register <password> <password>'
+# Message sent on successful login.
+login_success: '&aLogin successful. Welcome back!'
+# Message sent on successful registration.
+register_success: '&aYou have registered successfully! Welcome!'
+# Message sent when a player provides an incorrect password.
+password_incorrect: '&cWrong password.'
+# Message sent when a player tries to register but already has an account.
+already_registered: '&cYou are already registered. Use /login <password>.'
+# Message sent when a player tries to log in but is not registered.
+not_registered: '&cYou are not registered. Please use /register <password> <password>.'
+# Message sent during registration if the two passwords do not match.
+passwords_do_not_match: '&cThe passwords do not match.'
+# Message sent when a player tries to perform a restricted action before logging in.
+login_or_register_prompt: '&cYou must log in or register to do that.'
+# Message sent when a player tries to log in but is already in a session.
+already_logged_in: '&cYou are already logged in.'
+
+# --- Command Usage & Feedback ---
+# Usage message for the /register command.
+register_usage: '&cUsage: /register <password> <confirmPassword>'
+# Usage message for the /login command.
+login_usage: '&cUsage: /login <password>'
+# Message when a non-player (e.g., console) tries to use a player-only command.
+player_only_command: '&cThis command can only be used by players.'
+# Message sent when a player does not have permission for a command.
+no_permission: '&cYou do not have permission to use this command.'
+# Usage message for the admin command.
+admin_usage: '&cUsage: /authreload reload'
+# Message sent to an admin after successfully reloading the config.
+config_reloaded: '&aConfiguration and messages reloaded.'
+
+# --- Error Messages ---
+# A generic error message for unexpected issues.
+error_generic: '&cAn unexpected error occurred. Please contact an administrator.'
+# Kick message if the plugin fails to check the player's registration status on join.
+error_login_check: 'Could not verify your account status. Please try again.'
