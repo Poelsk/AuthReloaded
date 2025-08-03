@@ -3,6 +3,7 @@ package io.github.poelsk.authreloaded;
 import io.github.poelsk.authreloaded.auth.AuthenticationService;
 import io.github.poelsk.authreloaded.auth.PasswordService;
 import io.github.poelsk.authreloaded.auth.PremiumVerificationService;
+import io.github.poelsk.authreloaded.auth.RateLimitingService;
 import io.github.poelsk.authreloaded.commands.AdminCommand;
 import io.github.poelsk.authreloaded.commands.LoginCommand;
 import io.github.poelsk.authreloaded.commands.RegisterCommand;
@@ -28,7 +29,7 @@ public final class AuthReloaded extends JavaPlugin {
     private PlayerStatusManager playerStatusManager;
     private PremiumManager premiumManager;
     private PremiumVerificationService premiumVerificationService;
-
+    private RateLimitingService rateLimitingService;
 
     @Override
     public void onEnable() {
@@ -36,15 +37,17 @@ public final class AuthReloaded extends JavaPlugin {
 
         this.messageManager = new MessageManager(this);
         this.databaseManager = new DatabaseManager(this);
+
+        databaseManager.initializeDatabase();
+
         this.playerDataDAO = new PlayerDataDAO(this.databaseManager);
         this.passwordService = new PasswordService();
         this.sessionManager = new SessionManager();
         this.playerStatusManager = new PlayerStatusManager();
-        this.authenticationService = new AuthenticationService(playerDataDAO, passwordService, sessionManager, messageManager);
+        this.rateLimitingService = new RateLimitingService();
+        this.authenticationService = new AuthenticationService(playerDataDAO, passwordService, sessionManager, messageManager, rateLimitingService);
         this.premiumManager = new PremiumManager(this);
         this.premiumVerificationService = new PremiumVerificationService();
-
-        databaseManager.initializeDatabase();
 
         registerCommands();
         registerListeners();
@@ -54,9 +57,21 @@ public final class AuthReloaded extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (databaseManager!= null) {
-            databaseManager.close();
+        if (rateLimitingService != null) {
+            rateLimitingService.shutdown();
+            getLogger().info("Rate limiting service shutdown complete.");
         }
+
+        if (premiumVerificationService != null) {
+            premiumVerificationService.shutdown();
+            getLogger().info("Premium verification service shutdown complete.");
+        }
+
+        if (databaseManager != null) {
+            databaseManager.close();
+            getLogger().info("Database connections closed.");
+        }
+
         getLogger().info("AuthReloaded has been disabled.");
     }
 
@@ -102,5 +117,9 @@ public final class AuthReloaded extends JavaPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public RateLimitingService getRateLimitingService() {
+        return rateLimitingService;
     }
 }

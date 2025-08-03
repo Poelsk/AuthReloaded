@@ -12,11 +12,22 @@ import java.net.URL;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class PremiumVerificationService {
 
     private final Map<UUID, Long> lastVerificationAttempt = new ConcurrentHashMap<>();
     private final Map<UUID, Boolean> verificationCache = new ConcurrentHashMap<>();
+    private final Map<UUID, ScheduledFuture<?>> cacheCleanupTasks = new ConcurrentHashMap<>();
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2, r -> {
+        Thread t = new Thread(r, "AuthReloaded-Premium-Cache");
+        t.setDaemon(true);
+        return t;
+    });
 
     private static final long RATE_LIMIT_MS = 30000;
     private static final long CACHE_DURATION_MS = 300000;
@@ -67,8 +78,22 @@ public class PremiumVerificationService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error during premium verification for " + playerName + ": " + e.getMessage());
             return VerificationResult.VERIFICATION_ERROR;
+        }
+    }
+
+    public boolean isPremiumPlayer(String playerName) {
+        try {
+            String mojangUUID = getUUIDFromUsername(playerName);
+            if (mojangUUID == null) {
+                return false;
+            }
+
+            return verifyProfile(mojangUUID);
+        } catch (Exception e) {
+            System.err.println("Error checking if player is premium: " + e.getMessage());
+            return false;
         }
     }
 
@@ -79,24 +104,29 @@ public class PremiumVerificationService {
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
-        connection.setRequestProperty("User-Agent", "AuthReloaded-Plugin");
+        connection.setRequestProperty("User-Agent", "AuthReloaded-Plugin/1.0");
 
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
+        try {
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+                    return jsonResponse.get("id").getAsString();
                 }
-
-                JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-                return jsonResponse.get("id").getAsString();
+            } else if (responseCode == 204) {
+                return null;
+            } else {
+                throw new IOException("Mojang API returned code: " + responseCode);
             }
-        } else if (responseCode == 204) {
-            return null;
-        } else {
-            throw new IOException("Mojang API returned code: " + responseCode);
+        } finally {
+            connection.disconnect();
         }
     }
 
@@ -107,42 +137,73 @@ public class PremiumVerificationService {
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(5000);
         connection.setReadTimeout(5000);
-        connection.setRequestProperty("User-Agent", "AuthReloaded-Plugin");
+        connection.setRequestProperty("User-Agent", "AuthReloaded-Plugin/1.0");
 
-        int responseCode = connection.getResponseCode();
-        if (responseCode == 200) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
+        try {
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
+
+                    return jsonResponse.has("properties") &&
+                            jsonResponse.getAsJsonArray("properties").size() > 0;
                 }
-
-                JsonObject jsonResponse = JsonParser.parseString(response.toString()).getAsJsonObject();
-
-                return jsonResponse.has("properties") &&
-                        jsonResponse.getAsJsonArray("properties").size() > 0;
             }
+            return false;
+        } finally {
+            connection.disconnect();
         }
-
-        return false;
     }
 
     private void cacheResult(UUID playerUUID, boolean isPremium) {
         verificationCache.put(playerUUID, isPremium);
 
-        new Thread(() -> {
-            try {
-                Thread.sleep(CACHE_DURATION_MS);
-                verificationCache.remove(playerUUID);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }).start();
+        ScheduledFuture<?> oldTask = cacheCleanupTasks.get(playerUUID);
+        if (oldTask != null && !oldTask.isDone()) {
+            oldTask.cancel(false);
+        }
+
+        ScheduledFuture<?> cleanupTask = scheduler.schedule(() -> {
+            verificationCache.remove(playerUUID);
+            cacheCleanupTasks.remove(playerUUID);
+        }, CACHE_DURATION_MS, TimeUnit.MILLISECONDS);
+
+        cacheCleanupTasks.put(playerUUID, cleanupTask);
     }
 
     public void clearCache(UUID playerUUID) {
         verificationCache.remove(playerUUID);
         lastVerificationAttempt.remove(playerUUID);
+
+        ScheduledFuture<?> task = cacheCleanupTasks.remove(playerUUID);
+        if (task != null && !task.isDone()) {
+            task.cancel(false);
+        }
+    }
+
+    public void shutdown() {
+        cacheCleanupTasks.values().forEach(task -> {
+            if (!task.isDone()) {
+                task.cancel(false);
+            }
+        });
+        cacheCleanupTasks.clear();
+
+        scheduler.shutdown();
+        try {
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -40,26 +40,43 @@ public class DatabaseManager {
     }
 
     private void createTables() {
-        String sql = "CREATE TABLE IF NOT EXISTS auth_players (" +
-                "id INTEGER PRIMARY KEY AUTO_INCREMENT, " +
-                "uuid VARCHAR(36) NOT NULL UNIQUE, " +
-                "username VARCHAR(16) NOT NULL, " +
-                "password_hash VARCHAR(60) NOT NULL, " +
-                "last_login_ip VARCHAR(45), " +
-                "registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
-                ");";
+        String dbType = plugin.getConfig().getString("database.type", "sqlite").toLowerCase();
+        String sql;
 
-        if (plugin.getConfig().getString("database.type", "sqlite").equalsIgnoreCase("sqlite")) {
-            sql = "CREATE TABLE IF NOT EXISTS auth_players (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "uuid TEXT(36) NOT NULL UNIQUE, " +
-                    "username TEXT(16) NOT NULL, " +
-                    "password_hash TEXT(60) NOT NULL, " +
-                    "last_login_ip TEXT(45), " +
-                    "registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
-                    ");";
+        switch (dbType) {
+            case "sqlite":
+                sql = "CREATE TABLE IF NOT EXISTS auth_players (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "uuid TEXT(36) NOT NULL UNIQUE, " +
+                        "username TEXT(16) NOT NULL, " +
+                        "password_hash TEXT(60) NOT NULL, " +
+                        "last_login_ip TEXT(45), " +
+                        "registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+                        ");";
+                break;
+            case "mysql":
+                sql = "CREATE TABLE IF NOT EXISTS auth_players (" +
+                        "id INTEGER PRIMARY KEY AUTO_INCREMENT, " +
+                        "uuid VARCHAR(36) NOT NULL UNIQUE, " +
+                        "username VARCHAR(16) NOT NULL, " +
+                        "password_hash VARCHAR(60) NOT NULL, " +
+                        "last_login_ip VARCHAR(45), " +
+                        "registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+                        ");";
+                break;
+            case "h2":
+                sql = "CREATE TABLE IF NOT EXISTS auth_players (" +
+                        "id INTEGER PRIMARY KEY AUTO_INCREMENT, " +
+                        "uuid VARCHAR(36) NOT NULL UNIQUE, " +
+                        "username VARCHAR(16) NOT NULL, " +
+                        "password_hash VARCHAR(60) NOT NULL, " +
+                        "last_login_ip VARCHAR(45), " +
+                        "registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" +
+                        ");";
+                break;
+            default:
+                throw new IllegalStateException("Unsupported database type: " + dbType);
         }
-
 
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
@@ -74,7 +91,7 @@ public class DatabaseManager {
     }
 
     public void close() {
-        if (dataSource!= null &&!dataSource.isClosed()) {
+        if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
         }
     }

@@ -51,7 +51,15 @@ public class ActionLimiterListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
+    public void onPlayerChat(io.papermc.paper.event.player.AsyncChatEvent event) {
+        if (!isAllowed(event.getPlayer())) {
+            event.setCancelled(true);
+            plugin.getMessageManager().sendMessage(event.getPlayer(), "login_or_register_prompt");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerChatLegacy(AsyncPlayerChatEvent event) {
         if (!isAllowed(event.getPlayer())) {
             event.setCancelled(true);
             plugin.getMessageManager().sendMessage(event.getPlayer(), "login_or_register_prompt");
@@ -62,7 +70,7 @@ public class ActionLimiterListener implements Listener {
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (!isAllowed(event.getPlayer())) {
             String command = event.getMessage().split(" ")[0].toLowerCase();
-            if (!command.equals("/login") && !command.equals("/register")) {
+            if (!command.equals("/login") && !command.equals("/register") && !command.equals("/premium")) {
                 event.setCancelled(true);
                 plugin.getMessageManager().sendMessage(event.getPlayer(), "login_or_register_prompt");
             }
@@ -96,6 +104,21 @@ public class ActionLimiterListener implements Listener {
     public void onDropItem(PlayerDropItemEvent event) {
         if (!isAllowed(event.getPlayer())) {
             cancelAndNotify(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent event) {
+        if (!isAllowed(event.getPlayer())) {
+            cancelAndNotify(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        if (!isAllowed(event.getPlayer())) {
+            event.setCancelled(true);
+            plugin.getMessageManager().sendMessage(event.getPlayer(), "login_or_register_prompt");
         }
     }
 }

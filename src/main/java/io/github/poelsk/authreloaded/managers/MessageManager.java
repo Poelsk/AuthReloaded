@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 public class MessageManager {
 
-    private final AuthReloaded plugin;
+    public final AuthReloaded plugin;
     private FileConfiguration langConfig;
 
     public MessageManager(AuthReloaded plugin) {
@@ -23,20 +23,20 @@ public class MessageManager {
 
     public void loadMessages() {
         String lang = plugin.getConfig().getString("messages.language", "en-US");
-        File langFile = new File(plugin.getDataFolder(), "lang/" + lang + ".yml");
+        File langFile = new File(plugin.getDataFolder(), lang + ".yml");
 
         if (!langFile.exists()) {
-            plugin.saveResource("lang/" + lang + ".yml", false);
+            plugin.saveResource(lang + ".yml", false);
         }
 
         langConfig = YamlConfiguration.loadConfiguration(langFile);
 
-        try (InputStream defLangStream = plugin.getResource("lang/" + lang + ".yml")) {
-            if (defLangStream!= null) {
+        try (InputStream defLangStream = plugin.getResource(lang + ".yml")) {
+            if (defLangStream != null) {
                 langConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defLangStream, StandardCharsets.UTF_8)));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Could not load default language file: " + e.getMessage());
         }
     }
 

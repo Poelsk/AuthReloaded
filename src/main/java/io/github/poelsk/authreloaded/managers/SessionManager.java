@@ -2,33 +2,35 @@ package io.github.poelsk.authreloaded.managers;
 
 import org.bukkit.entity.Player;
 
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
 
-    private final Map<UUID, PlayerSession> activeSessions = new ConcurrentHashMap<>();
+    private final Set<UUID> loggedInPlayers = ConcurrentHashMap.newKeySet();
 
     public void createSession(Player player) {
-        activeSessions.put(player.getUniqueId(), new PlayerSession(player.getUniqueId()));
+        loggedInPlayers.add(player.getUniqueId());
     }
 
     public void endSession(Player player) {
-        activeSessions.remove(player.getUniqueId());
+        loggedInPlayers.remove(player.getUniqueId());
     }
 
     public boolean isLoggedIn(Player player) {
-        return activeSessions.containsKey(player.getUniqueId());
+        return loggedInPlayers.contains(player.getUniqueId());
     }
 
-    private static class PlayerSession {
-        private final UUID playerUUID;
-        private final long loginTime;
+    public boolean isLoggedIn(UUID playerUUID) {
+        return loggedInPlayers.contains(playerUUID);
+    }
 
-        public PlayerSession(UUID playerUUID) {
-            this.playerUUID = playerUUID;
-            this.loginTime = System.currentTimeMillis();
-        }
+    public int getLoggedInCount() {
+        return loggedInPlayers.size();
+    }
+
+    public void clearAllSessions() {
+        loggedInPlayers.clear();
     }
 }
