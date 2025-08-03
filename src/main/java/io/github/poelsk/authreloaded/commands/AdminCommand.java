@@ -15,13 +15,13 @@ public class AdminCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!sender.hasPermission("authreloaded.admin")) {
             plugin.getMessageManager().sendMessage(sender, "no_permission");
             return true;
         }
 
-        if (args.length > 0 && "reload".equalsIgnoreCase(args)) {
+        if (args.length > 0 && "reload".equalsIgnoreCase(args[0])) {
             plugin.reloadConfig();
             plugin.getMessageManager().loadMessages();
             plugin.getMessageManager().sendMessage(sender, "config_reloaded");

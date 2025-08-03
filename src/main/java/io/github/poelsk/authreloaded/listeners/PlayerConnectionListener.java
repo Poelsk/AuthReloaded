@@ -40,15 +40,10 @@ public class PlayerConnectionListener implements Listener {
             return;
         }
 
-        if (player.isOnline()) {
-            plugin.getSessionManager().createSession(player);
-            return;
-        }
-
         Boolean isRegistered = plugin.getPlayerStatusManager().getPendingStatus(player.getUniqueId());
         plugin.getPlayerStatusManager().removePendingStatus(player.getUniqueId());
 
-        if (isRegistered!= null) {
+        if (isRegistered != null) {
             if (isRegistered) {
                 plugin.getMessageManager().sendMessage(player, "login_prompt");
             } else {

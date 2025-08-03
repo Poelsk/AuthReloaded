@@ -18,7 +18,7 @@ public class LoginCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
             plugin.getMessageManager().sendMessage(sender, "player_only_command");
             return true;
@@ -26,12 +26,12 @@ public class LoginCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (args.length!= 1) {
+        if (args.length != 1) {
             plugin.getMessageManager().sendMessage(player, "login_usage");
             return true;
         }
 
-        String password = args;
+        String password = args[0];
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             AuthenticationService.AuthResult result = plugin.getAuthenticationService().loginPlayer(player, password);

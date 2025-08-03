@@ -2,15 +2,18 @@ package io.github.poelsk.authreloaded;
 
 import io.github.poelsk.authreloaded.auth.AuthenticationService;
 import io.github.poelsk.authreloaded.auth.PasswordService;
+import io.github.poelsk.authreloaded.auth.PremiumVerificationService;
 import io.github.poelsk.authreloaded.commands.AdminCommand;
 import io.github.poelsk.authreloaded.commands.LoginCommand;
 import io.github.poelsk.authreloaded.commands.RegisterCommand;
+import io.github.poelsk.authreloaded.commands.PremiumCommand;
 import io.github.poelsk.authreloaded.database.DatabaseManager;
 import io.github.poelsk.authreloaded.database.PlayerDataDAO;
 import io.github.poelsk.authreloaded.listeners.ActionLimiterListener;
 import io.github.poelsk.authreloaded.listeners.PlayerConnectionListener;
 import io.github.poelsk.authreloaded.managers.MessageManager;
 import io.github.poelsk.authreloaded.managers.PlayerStatusManager;
+import io.github.poelsk.authreloaded.managers.PremiumManager;
 import io.github.poelsk.authreloaded.managers.SessionManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,6 +26,9 @@ public final class AuthReloaded extends JavaPlugin {
     private MessageManager messageManager;
     private AuthenticationService authenticationService;
     private PlayerStatusManager playerStatusManager;
+    private PremiumManager premiumManager;
+    private PremiumVerificationService premiumVerificationService;
+
 
     @Override
     public void onEnable() {
@@ -35,6 +41,8 @@ public final class AuthReloaded extends JavaPlugin {
         this.sessionManager = new SessionManager();
         this.playerStatusManager = new PlayerStatusManager();
         this.authenticationService = new AuthenticationService(playerDataDAO, passwordService, sessionManager, messageManager);
+        this.premiumManager = new PremiumManager(this);
+        this.premiumVerificationService = new PremiumVerificationService();
 
         databaseManager.initializeDatabase();
 
@@ -56,6 +64,7 @@ public final class AuthReloaded extends JavaPlugin {
         this.getCommand("login").setExecutor(new LoginCommand(this));
         this.getCommand("register").setExecutor(new RegisterCommand(this));
         this.getCommand("authreload").setExecutor(new AdminCommand(this));
+        this.getCommand("premium").setExecutor(new PremiumCommand(this));
     }
 
     private void registerListeners() {
@@ -81,5 +90,17 @@ public final class AuthReloaded extends JavaPlugin {
 
     public PlayerStatusManager getPlayerStatusManager() {
         return playerStatusManager;
+    }
+
+    public PremiumManager getPremiumManager() {
+        return premiumManager;
+    }
+
+    public PremiumVerificationService getPremiumVerificationService() {
+        return premiumVerificationService;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 }

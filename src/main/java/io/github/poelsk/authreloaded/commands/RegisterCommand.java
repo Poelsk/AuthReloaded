@@ -18,7 +18,7 @@ public class RegisterCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
             plugin.getMessageManager().sendMessage(sender, "player_only_command");
             return true;
@@ -26,17 +26,17 @@ public class RegisterCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (args.length!= 2) {
+        if (args.length != 2) {
             plugin.getMessageManager().sendMessage(player, "register_usage");
             return true;
         }
 
-        if (!args.equals(args[1])) {
+        if (!args[0].equals(args[1])) {
             plugin.getMessageManager().sendMessage(player, "passwords_do_not_match");
             return true;
         }
 
-        String password = args;
+        String password = args[0];
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             AuthenticationService.AuthResult result = plugin.getAuthenticationService().registerPlayer(player, password);
