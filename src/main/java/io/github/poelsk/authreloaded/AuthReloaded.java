@@ -47,7 +47,7 @@ public final class AuthReloaded extends JavaPlugin {
         this.rateLimitingService = new RateLimitingService();
         this.authenticationService = new AuthenticationService(playerDataDAO, passwordService, sessionManager, messageManager, rateLimitingService);
         this.premiumManager = new PremiumManager(this);
-        this.premiumVerificationService = new PremiumVerificationService();
+        this.premiumVerificationService = new PremiumVerificationService(this); // Pasar instancia del plugin
 
         registerCommands();
         registerListeners();

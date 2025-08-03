@@ -26,12 +26,20 @@ public class MessageManager {
         File langFile = new File(plugin.getDataFolder(), lang + ".yml");
 
         if (!langFile.exists()) {
-            plugin.saveResource(lang + ".yml", false);
+            plugin.saveResource("lang/" + lang + ".yml", false);
+            File sourceFile = new File(plugin.getDataFolder(), "lang/" + lang + ".yml");
+            if (sourceFile.exists()) {
+                sourceFile.renameTo(langFile);
+                File langDir = new File(plugin.getDataFolder(), "lang");
+                if (langDir.exists() && langDir.isDirectory() && langDir.list().length == 0) {
+                    langDir.delete();
+                }
+            }
         }
 
         langConfig = YamlConfiguration.loadConfiguration(langFile);
 
-        try (InputStream defLangStream = plugin.getResource(lang + ".yml")) {
+        try (InputStream defLangStream = plugin.getResource("lang/" + lang + ".yml")) {
             if (defLangStream != null) {
                 langConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defLangStream, StandardCharsets.UTF_8)));
             }

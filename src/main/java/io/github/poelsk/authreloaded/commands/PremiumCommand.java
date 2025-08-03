@@ -26,13 +26,13 @@ public class PremiumCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // Verificar si ya está logueado
-        if (plugin.getSessionManager().isLoggedIn(player)) {
-            plugin.getMessageManager().sendMessage(player, "already_logged_in");
-            return true;
+        if (!Bukkit.getOnlineMode()) {
+            if (plugin.getSessionManager().isLoggedIn(player)) {
+                plugin.getMessageManager().sendMessage(player, "already_logged_in");
+                return true;
+            }
         }
 
-        // Verificar si ya es premium
         if (plugin.getPremiumManager().isPremium(player.getUniqueId())) {
             plugin.getMessageManager().sendMessage(player, "already_premium");
             return true;
@@ -40,12 +40,10 @@ public class PremiumCommand implements CommandExecutor {
 
         plugin.getMessageManager().sendMessage(player, "premium_verification_start");
 
-        // Verificación asíncrona con Mojang
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             PremiumVerificationService.VerificationResult result =
                     plugin.getPremiumVerificationService().verifyPremium(player);
 
-            // Volver al hilo principal para procesar el resultado
             Bukkit.getScheduler().runTask(plugin, () -> {
                 handleVerificationResult(player, result);
             });
@@ -56,26 +54,34 @@ public class PremiumCommand implements CommandExecutor {
 
     private void handleVerificationResult(Player player, PremiumVerificationService.VerificationResult result) {
         switch (result) {
-            case VERIFIED_PREMIUM:
-                plugin.getPremiumManager().setPremium(player.getUniqueId(), true);
-                plugin.getSessionManager().createSession(player);
-                plugin.getMessageManager().sendMessage(player, "premium_verified_success");
+            case SKIN_VERIFICATION_PENDING:
+                plugin.getMessageManager().sendMessage(player, "premium_skin_verification_pending");
+                plugin.getLogger().info("Player " + player.getName() + " passed initial checks, verifying skin...");
                 break;
 
             case NOT_PREMIUM:
                 plugin.getMessageManager().sendMessage(player, "premium_verification_failed");
+                plugin.getLogger().info("Player " + player.getName() + " failed premium verification - not a premium account.");
                 break;
 
             case USERNAME_MISMATCH:
                 plugin.getMessageManager().sendMessage(player, "premium_username_mismatch");
+                plugin.getLogger().info("Player " + player.getName() + " failed premium verification - username mismatch.");
                 break;
 
             case VERIFICATION_ERROR:
                 plugin.getMessageManager().sendMessage(player, "premium_verification_error");
+                plugin.getLogger().warning("Premium verification error for player " + player.getName());
                 break;
 
             case RATE_LIMITED:
                 plugin.getMessageManager().sendMessage(player, "premium_verification_rate_limit");
+                break;
+
+            case VERIFIED_PREMIUM:
+                break;
+
+            case SKIN_MISMATCH:
                 break;
         }
     }

@@ -17,3 +17,23 @@ admin_usage: '&cUso: /authreload reload'
 config_reloaded: '&aConfiguracion y mensajes recargados.'
 error_generic: '&cOcurrio un error. Habla con un admin.'
 error_login_check: 'No se pudo verificar tu cuenta. Intenta de nuevo.'
+
+# Mensajes de seguridad
+rate_limited: '&cMuchos intentos fallidos. Espera {0} minutos antes de intentar de nuevo.'
+invalid_password: '&cLa clave debe tener entre {0} y {1} caracteres y no puede tener espacios.'
+
+# Mensajes premium
+premium_welcome: '&aJugador premium detectado. Bienvenido!'
+premium_account_protection: 'Esta cuenta está protegida como premium. Solo jugadores premium pueden acceder.'
+premium_enabled: '&aFuiste marcado como premium! Vuelve a entrar al server para activar el modo premium.'
+premium_disabled: '&cYa no estás marcado como premium.'
+premium_status_true: '&aEstás marcado como premium.'
+premium_status_false: '&cNo estás marcado como premium.'
+premium_usage: '&cUso: /premium <enable|disable|status>'
+premium_verification_start: '&eVerificando tu estado premium con Mojang...'
+premium_verified_success: '&aVerificacion premium exitosa! Ya estas conectado.'
+premium_verification_failed: '&cVerificacion premium falló. No eres un jugador premium.'
+premium_username_mismatch: '&cVerificacion premium falló. El nombre no coincide con la cuenta premium.'
+premium_verification_error: '&cError durante la verificacion premium. Intenta mas tarde.'
+premium_verification_rate_limit: '&cEspera un poco antes de intentar la verificacion premium de nuevo.'
+already_premium: '&cYa estás marcado como premium.'

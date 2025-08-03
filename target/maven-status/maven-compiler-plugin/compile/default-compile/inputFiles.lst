@@ -3,6 +3,7 @@ C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\au
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\database\IDataSource.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\listeners\ActionLimiterListener.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\commands\AdminCommand.java
+C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\commands\PremiumCommand.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\commands\LoginCommand.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\commands\RegisterCommand.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\database\SQLiteDataSource.java
@@ -12,7 +13,10 @@ C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\au
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\database\H2DataSource.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\auth\AuthenticationService.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\database\DatabaseManager.java
+C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\managers\PremiumManager.java
+C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\auth\RateLimitingService.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\database\MySQLDataSource.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\managers\SessionManager.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\auth\PasswordService.java
 C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\AuthReloaded.java
+C:\Users\JAVA\Desktop\JAVA proyectos\untitled1\src\main\java\io\github\poelsk\authreloaded\auth\PremiumVerificationService.java

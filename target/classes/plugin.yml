@@ -1,9 +1,18 @@
 name: AuthReloaded
-version: '1.0.0'
+version: '0.0.1-experimental'
 main: io.github.poelsk.authreloaded.AuthReloaded
-api-version: '1.16'
-author: Poelsk
+api-version: '1.19'
+author: Santiiaago
 description: A hybrid authentication plugin for premium and non-premium players. (experimental version, no for public use.)
+
+libraries:
+  - org.xerial:sqlite-jdbc:3.43.2.0
+  - com.mysql:mysql-connector-j:9.2.0
+  - com.h2database:h2:2.2.224
+  - com.zaxxer:HikariCP:5.1.0
+  - org.mindrot:jbcrypt:0.4
+  - com.google.code.gson:gson:2.10.1
+
 commands:
   login:
     description: Log in to the server.
@@ -17,6 +26,11 @@ commands:
     description: Admin commands for AuthReloaded.
     usage: /<command> reload
     permission: authreloaded.admin
+  premium:
+    description: Premium player commands.
+    usage: /<command>
+    permission: authreloaded.premium
+
 permissions:
   authreloaded.use:
     description: Allows players to use the /login and /register commands.
@@ -24,3 +38,6 @@ permissions:
   authreloaded.admin:
     description: Allows access to administrative commands for AuthReloaded.
     default: op
+  authreloaded.premium:
+    description: Allows access to premium commands.
+    default: true
