@@ -341,7 +341,7 @@ public class PremiumVerificationService {
             }
 
             String skinHash = getProfileSkinHash(mojangUUID);
-            return skinHash != null; // Si tiene datos de skin, es premium
+            return skinHash != null;
         } catch (Exception e) {
             plugin.getLogger().severe("[PremiumVerification] Error checking if player is premium: " + e.getMessage());
             return false;

@@ -54,6 +54,10 @@ public class PremiumCommand implements CommandExecutor {
 
     private void handleVerificationResult(Player player, PremiumVerificationService.VerificationResult result) {
         switch (result) {
+            case VERIFIED_PREMIUM:
+                plugin.getLogger().info("Player " + player.getName() + " verified as premium via UUID match.");
+                break;
+
             case SKIN_VERIFICATION_PENDING:
                 plugin.getMessageManager().sendMessage(player, "premium_skin_verification_pending");
                 plugin.getLogger().info("Player " + player.getName() + " passed initial checks, verifying skin...");
@@ -76,9 +80,6 @@ public class PremiumCommand implements CommandExecutor {
 
             case RATE_LIMITED:
                 plugin.getMessageManager().sendMessage(player, "premium_verification_rate_limit");
-                break;
-
-            case VERIFIED_PREMIUM:
                 break;
 
             case SKIN_MISMATCH:
